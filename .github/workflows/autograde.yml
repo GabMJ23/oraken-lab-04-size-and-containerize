@@ -1,0 +1,75 @@
+name: Autograde
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - run: pytest -q
+
+  docker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build the image
+        run: docker build -t lab04-search .
+
+      - name: The image does not run as root
+        run: |
+          uid="$(docker run --rm --entrypoint id lab04-search -u)"
+          echo "The container runs as user id: $uid"
+          if [ "$uid" = "0" ]; then
+            echo "::error::The image runs as root (uid 0). Create a user in the Dockerfile and switch to it with USER."
+            exit 1
+          fi
+
+      - name: The container starts and answers /health (no database yet)
+        run: |
+          # The address points at nothing on purpose: /health must still answer (503, database unreachable).
+          docker run -d --name probe -p 8000:8000 -e PORT=8000 \
+            -e DATABASE_URL=postgresql://nobody:nothing@127.0.0.1:5432/none lab04-search
+          for i in $(seq 1 30); do
+            code="$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8000/health || true)"
+            if [ "$code" = "200" ] || [ "$code" = "503" ]; then
+              echo "/health answered with HTTP $code after about $i s"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "::error::The container did not answer on http://localhost:8000/health within 30 s. Check the start command (CMD) and the port."
+          docker logs probe || true
+          exit 1
+
+      - name: Remove the probe container
+        if: always()
+        run: docker rm -f probe || true
+
+      - name: docker compose up starts everything
+        run: |
+          docker compose up -d --build
+          for i in $(seq 1 90); do
+            if curl -sf http://localhost:8000/health > health.json; then
+              echo "/health is green after about $i s:"
+              cat health.json; echo
+              curl -sf "http://localhost:8000/search?q=cache"; echo
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "::error::After 90 s, http://localhost:8000/health still does not answer 200. The app cannot reach the database: check DATABASE_URL, POSTGRES_PASSWORD and the service names."
+          docker compose ps || true
+          docker compose logs --no-color || true
+          curl -s http://localhost:8000/health || true
+          exit 1
+
+      - name: Stop everything
+        if: always()
+        run: docker compose down -v || true

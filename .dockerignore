@@ -1,0 +1,5 @@
+# Lab 4, Part B, step 2: what must NEVER be sent to `docker build`.
+# One pattern per line, like in .gitignore.
+#
+# TODO: exclude at least your secrets (.env), your virtualenv (.venv)
+# and local data (data/). Git history (.git) and caches are good candidates too.

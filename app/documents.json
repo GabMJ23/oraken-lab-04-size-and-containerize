@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "title": "Little's law",
+    "text": "The average number of requests in progress equals the arrival rate times the average time each request spends in the system: L = lambda x W."
+  },
+  {
+    "id": 2,
+    "title": "Occupancy rate",
+    "text": "The occupancy rate is the share of capacity that is busy on average. Close to 100 percent, the queue and the wait grow very fast."
+  },
+  {
+    "id": 3,
+    "title": "Docker layer cache",
+    "text": "Each instruction in a Dockerfile makes a layer. When nothing changed above a layer, Docker reuses it from the cache instead of running the instruction again."
+  },
+  {
+    "id": 4,
+    "title": "Named volumes",
+    "text": "A named volume keeps the database files outside the container, so the data survives when the container is stopped, removed or rebuilt."
+  },
+  {
+    "id": 5,
+    "title": "pgvector",
+    "text": "pgvector is a Postgres extension that stores embeddings and finds the nearest vectors, which is how a search service finds similar documents."
+  },
+  {
+    "id": 6,
+    "title": "Health checks",
+    "text": "A health endpoint tells the platform whether the service is ready. A good one checks the dependencies the service cannot work without, like its database."
+  },
+  {
+    "id": 7,
+    "title": "Secrets",
+    "text": "Passwords and API keys never go into Git or into an image. Pass them at run time through environment variables or a secret store."
+  },
+  {
+    "id": 8,
+    "title": "Rate limits",
+    "text": "A model provider caps how many requests you may send per minute and how many may run at once. Above that cap, more copies of your service only wait longer."
+  }
+]

@@ -1,0 +1,6 @@
+# What the search service needs to run. This file is installed INSIDE the image.
+# TODO (Part B, step 1): pin every line to one exact version, like  name==1.2.3
+# Without a pin, two builds a month apart can install different code.
+fastapi
+uvicorn
+psycopg[binary]

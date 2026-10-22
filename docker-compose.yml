@@ -1,0 +1,13 @@
+# Lab 4, Part B, step 5: describe the whole system, so that `docker compose up`
+# starts everything on any machine with Docker, with no other step.
+#
+# TODO:
+#   - a service "app", built from the Dockerfile in this folder, port 8000 published as 8000,
+#     with DATABASE_URL (and PORT) in its environment
+#   - a service "db" from the image pgvector/pgvector:pg16, with POSTGRES_USER,
+#     POSTGRES_PASSWORD and POSTGRES_DB in its environment
+#   - a named volume mounted at /var/lib/postgresql/data, so the data survives a restart
+#
+# Remember: inside the app container, "localhost" is the app container itself.
+
+services: {}
